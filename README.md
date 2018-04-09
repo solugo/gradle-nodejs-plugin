@@ -29,6 +29,17 @@ gradle npm<task> -Pargs="..."
 gradle npm -Pargs="--version"
 </pre>
 
+### Npx
+##### Syntax
+<pre>
+gradle npx<module> -Pargs="..."
+</pre>
+
+##### Example
+<pre>
+gradle npxWebpack -Pargs="--version"
+</pre>
+
 
 ## Examples
 

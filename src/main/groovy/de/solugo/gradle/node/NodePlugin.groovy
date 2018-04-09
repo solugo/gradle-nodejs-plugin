@@ -9,8 +9,6 @@ class NodePlugin implements Plugin<Project> {
     void apply(final Project project) {
         project.extensions.create("node", NodeExtension)
 
-        project.node.aliases["npm"] = "npm/bin/npm-cli.js"
-
         project.ext.NodeTask = NodeTask
 
         final cleanTask = project.tasks.findByPath("clean")
@@ -20,12 +18,14 @@ class NodePlugin implements Plugin<Project> {
             }
         }
 
+        final snakeCase = { String str -> str.replaceAll(/[A-Z]/) { "-" + it.toLowerCase() }.substring(1) }
+
         project.tasks.create("npmInstall", NodeTask).doFirst {
             executable = "npm"
             args = ["install"]
 
-            final def args = project.getProperties().get(NodeTask.PROPERTY_ARGS)
-            if (project.file("node_modules").exists() && args == null) {
+            final def property = project.getProperties().get(NodeTask.PROPERTY_ARGS)
+            if (project.file("node_modules").exists() && property == null) {
                 return "SKIPPED"
             }
         }
@@ -34,9 +34,9 @@ class NodePlugin implements Plugin<Project> {
             if (project.tasks.findByPath(taskName) == null && taskName.startsWith("npmRun")) {
                 final String target = (taskName - "npmRun")
                 project.tasks.create(taskName, NodeTask).doFirst {
-                    executable = "npm"
+                    executable = "npm/bin/npm-cli.js"
                     if (target.length() > 0) {
-                        args = ["run", target.substring(0, 1).toLowerCase() + target.substring(1)]
+                        args = ["run", snakeCase(target)]
                     } else {
                         args = ["run"]
                     }
@@ -48,20 +48,32 @@ class NodePlugin implements Plugin<Project> {
             if (project.tasks.findByPath(taskName) == null && taskName.startsWith("npm")) {
                 final String target = (taskName - "npm")
                 project.tasks.create(taskName, NodeTask).doFirst {
-                    executable = "npm"
+                    executable = "npm/bin/npm-cli.js"
                     if (target.length() > 0) {
-                        args = [target.substring(0, 1).toLowerCase() + target.substring(1)]
+                        args = [snakeCase(target)]
                     }
                 }
             }
         }
 
-        project.tasks.addRule("Pattern: node<task>") { String taskName ->
+        project.tasks.addRule("Pattern: npx<task>") { String taskName ->
+            if (project.tasks.findByPath(taskName) == null && taskName.startsWith("npx")) {
+                final String target = (taskName - "npx")
+                project.tasks.create(taskName, NodeTask).doFirst {
+                    executable = "npm/bin/npx-cli.js"
+                    if (target.length() > 0) {
+                        args = [snakeCase(target)]
+                    }
+                }
+            }
+        }
+
+        project.tasks.addRule("Pattern: node<script>") { String taskName ->
             if (project.tasks.findByPath(taskName) == null && taskName.startsWith("node")) {
                 final String target = (taskName - "node")
                 project.tasks.create(taskName, NodeTask).doFirst {
                     if (target.length() > 0) {
-                        executable = target.substring(0, 1).toLowerCase() + target.substring(1)
+                        executable = snakeCase(target)
                     }
                 }
             }
