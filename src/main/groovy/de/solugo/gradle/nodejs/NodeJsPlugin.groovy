@@ -1,15 +1,15 @@
-package de.solugo.gradle.node
+package de.solugo.gradle.nodejs
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
-class NodePlugin implements Plugin<Project> {
+class NodeJsPlugin implements Plugin<Project> {
 
     @Override
     void apply(final Project project) {
-        project.extensions.create("node", NodeExtension)
+        project.extensions.create("nodejs", NodeJsExtension)
 
-        project.ext.NodeTask = NodeTask
+        project.ext.NodeTask = NodeJsTask
 
         final cleanTask = project.tasks.findByPath("clean")
         if (cleanTask != null) {
@@ -20,20 +20,10 @@ class NodePlugin implements Plugin<Project> {
 
         final snakeCase = { String str -> str.replaceAll(/[A-Z]/) { "-" + it.toLowerCase() }.substring(1) }
 
-        project.tasks.create("npmInstall", NodeTask).doFirst {
-            executable = "npm"
-            args = ["install"]
-
-            final def property = project.getProperties().get(NodeTask.PROPERTY_ARGS)
-            if (project.file("node_modules").exists() && property == null) {
-                return "SKIPPED"
-            }
-        }
-
         project.tasks.addRule("Pattern: npmRun<script>") { String taskName ->
             if (project.tasks.findByPath(taskName) == null && taskName.startsWith("npmRun")) {
                 final String target = (taskName - "npmRun")
-                project.tasks.create(taskName, NodeTask).doFirst {
+                project.tasks.create(taskName, NodeJsTask).doFirst {
                     executable = "npm/bin/npm-cli.js"
                     if (target.length() > 0) {
                         args = ["run", snakeCase(target)]
@@ -44,11 +34,24 @@ class NodePlugin implements Plugin<Project> {
             }
         }
 
+        project.tasks.addRule("Pattern: npmRequire<package>") { String taskName ->
+            if (project.tasks.findByPath(taskName) == null && taskName.startsWith("npmRequire")) {
+                final String target = (taskName - "npmRequire")
+                project.tasks.create(taskName, NodeJsTask).doFirst {
+                    executable = "npm"
+                    modules = ["npm"]
+                    if (target.length() > 0) {
+                        args = ["install", snakeCase(target)]
+                    }
+                }
+            }
+        }
+
         project.tasks.addRule("Pattern: npm<task>") { String taskName ->
             if (project.tasks.findByPath(taskName) == null && taskName.startsWith("npm")) {
                 final String target = (taskName - "npm")
-                project.tasks.create(taskName, NodeTask).doFirst {
-                    executable = "npm/bin/npm-cli.js"
+                project.tasks.create(taskName, NodeJsTask).doFirst {
+                    executable = "npm"
                     if (target.length() > 0) {
                         args = [snakeCase(target)]
                     }
@@ -59,8 +62,8 @@ class NodePlugin implements Plugin<Project> {
         project.tasks.addRule("Pattern: npx<task>") { String taskName ->
             if (project.tasks.findByPath(taskName) == null && taskName.startsWith("npx")) {
                 final String target = (taskName - "npx")
-                project.tasks.create(taskName, NodeTask).doFirst {
-                    executable = "npm/bin/npx-cli.js"
+                project.tasks.create(taskName, NodeJsTask).doFirst {
+                    executable = "npx"
                     if (target.length() > 0) {
                         args = [snakeCase(target)]
                     }
@@ -71,9 +74,10 @@ class NodePlugin implements Plugin<Project> {
         project.tasks.addRule("Pattern: node<script>") { String taskName ->
             if (project.tasks.findByPath(taskName) == null && taskName.startsWith("node")) {
                 final String target = (taskName - "node")
-                project.tasks.create(taskName, NodeTask).doFirst {
+                project.tasks.create(taskName, NodeJsTask).doFirst {
+                    executable = "node"
                     if (target.length() > 0) {
-                        executable = snakeCase(target)
+                        args = [snakeCase(target)]
                     }
                 }
             }

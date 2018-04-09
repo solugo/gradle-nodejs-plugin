@@ -1,5 +1,5 @@
 group 'de.solugo.gradle'
-version '1.0.0'
+version '0.1.0'
 
 apply plugin: 'groovy'
 apply plugin: 'maven'
@@ -11,8 +11,9 @@ repositories {
 dependencies {
     compile gradleApi()
     compile localGroovy()
-    compile "org.apache.commons:commons-compress:1.15"
-    compile "org.tukaani:xz:1.8"
+    compile "org.codehaus.plexus:plexus-archiver:3.5"
+    compile "org.codehaus.plexus:plexus-container-default:1.7.1"
+
 
     testCompile gradleTestKit()
     testCompile "junit:junit:4.12"
