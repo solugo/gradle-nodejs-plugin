@@ -21,8 +21,8 @@ class NodePlugin implements Plugin<Project> {
         }
 
         project.tasks.create("npmInstall", NodeTask).doFirst {
-            executable "npm"
-            args "install"
+            executable = "npm"
+            args = ["install"]
 
             final def args = project.getProperties().get(NodeTask.PROPERTY_ARGS)
             if (project.file("node_modules").exists() && args == null) {
@@ -30,20 +30,39 @@ class NodePlugin implements Plugin<Project> {
             }
         }
 
+        project.tasks.addRule("Pattern: npmRun<script>") { String taskName ->
+            if (project.tasks.findByPath(taskName) == null && taskName.startsWith("npmRun")) {
+                final String target = (taskName - "npmRun")
+                project.tasks.create(taskName, NodeTask).doFirst {
+                    executable = "npm"
+                    if (target.length() > 0) {
+                        args = ["run", target.substring(0, 1).toLowerCase() + target.substring(1)]
+                    } else {
+                        args = ["run"]
+                    }
+                }
+            }
+        }
+
         project.tasks.addRule("Pattern: npm<task>") { String taskName ->
-            if (taskName.startsWith("npm")) {
+            if (project.tasks.findByPath(taskName) == null && taskName.startsWith("npm")) {
                 final String target = (taskName - "npm")
                 project.tasks.create(taskName, NodeTask).doFirst {
-                    executable = target.substring(0, 1).toLowerCase() + target.substring(1)
+                    executable = "npm"
+                    if (target.length() > 0) {
+                        args = [target.substring(0, 1).toLowerCase() + target.substring(1)]
+                    }
                 }
             }
         }
 
         project.tasks.addRule("Pattern: node<task>") { String taskName ->
-            if (taskName.startsWith("node")) {
+            if (project.tasks.findByPath(taskName) == null && taskName.startsWith("node")) {
                 final String target = (taskName - "node")
                 project.tasks.create(taskName, NodeTask).doFirst {
-                    executable = target.substring(0, 1).toLowerCase() + target.substring(1)
+                    if (target.length() > 0) {
+                        executable = target.substring(0, 1).toLowerCase() + target.substring(1)
+                    }
                 }
             }
         }

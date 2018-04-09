@@ -7,9 +7,7 @@ import javax.naming.OperationNotSupportedException
 
 class NodeTask<T extends NodeTask<T>> extends AbstractExecTask<T> {
 
-    public static final String PROPERTY_ARGS = "exec.args"
-
-    protected final List<Object> prefixes = new ArrayList<>()
+    public static final String PROPERTY_ARGS = "args"
 
     @Inject
     NodeTask() {
@@ -18,6 +16,9 @@ class NodeTask<T extends NodeTask<T>> extends AbstractExecTask<T> {
 
     NodeTask(final Class<T> taskType) {
         super(taskType)
+        this.standardInput = System.in
+        this.standardOutput = System.out
+        this.errorOutput = System.err
     }
 
     @Override
@@ -26,7 +27,6 @@ class NodeTask<T extends NodeTask<T>> extends AbstractExecTask<T> {
 
         final List<Object> arguments = new ArrayList<>();
         arguments.add(nodeUtil.executable.absolutePath)
-        arguments.addAll(this.prefixes)
         if (this.executable != null) {
             arguments.add(this.executable)
         }
@@ -37,10 +37,9 @@ class NodeTask<T extends NodeTask<T>> extends AbstractExecTask<T> {
             final target = arguments.get(1).toString()
             final alias = project.node.aliases.get(target)
             if (alias != null) {
-                arguments.remove(1)
+                arguments.removeAt(1)
                 arguments.addAll(1, alias.split())
             }
-
         }
         if (arguments.size() > 1) {
             arguments.set(1, this.resolveScript(
@@ -52,7 +51,17 @@ class NodeTask<T extends NodeTask<T>> extends AbstractExecTask<T> {
         if (property != null) {
             arguments.addAll(property.split())
         }
+
+        println("Running ${arguments.join(" ")}")
+
         this.commandLine(arguments)
+
+        if (this.environment['Path'] != null) {
+            this.environment['Path'] = nodeUtil.executable.parentFile.absolutePath + File.pathSeparator + this.environment['Path']
+        } else {
+            this.environment['PATH'] = nodeUtil.executable.parentFile.absolutePath + File.pathSeparator + this.environment['PATH']
+        }
+
 
         super.exec()
     }
@@ -70,6 +79,6 @@ class NodeTask<T extends NodeTask<T>> extends AbstractExecTask<T> {
             }
         }
 
-        throw new OperationNotSupportedException("Could not find script ${script} in ${paths}")
+        throw new OperationNotSupportedException("Could not find script '${script}' in ${paths}")
     }
 }
