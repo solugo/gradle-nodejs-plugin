@@ -13,8 +13,11 @@ class NodePlugin implements Plugin<Project> {
 
         project.ext.NodeTask = NodeTask
 
-        project.tasks.clean.doLast {
-            delete project.file("node_modules")
+        final cleanTask = project.tasks.findByPath("clean")
+        if (cleanTask != null) {
+            cleanTask.doLast {
+                delete project.file("node_modules")
+            }
         }
 
         project.tasks.create("npmInstall", NodeTask).doFirst {

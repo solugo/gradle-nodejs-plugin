@@ -14,7 +14,7 @@ class PluginTest {
     @Test
     void test() {
         final Project project = ProjectBuilder.builder().build()
-        project.pluginManager.apply('node')
+        project.pluginManager.apply('de.solugo.gradle.node')
 
         project.task("help", type: NodeTask) {
             args = ["--version"]
