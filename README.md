@@ -8,7 +8,7 @@ execution.
 
 ## Configuration
 <pre>
-node {
+nodejs {
   version = '9.11.0'
 }
 </pre>
