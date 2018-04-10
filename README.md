@@ -1,77 +1,64 @@
-[![Travis](https://img.shields.io/travis/solugo/node-gradle-plugin.svg?style=for-the-badge)](https://travis-ci.org/solugo/node-gradle-plugin)
-[![License](https://img.shields.io/github/license/solugo/node-gradle-plugin.svg?style=for-the-badge)](https://github.com/solugo/node-gradle-plugin/blob/master/LICENSE)
-[![Maven metadata URI](https://img.shields.io/maven-metadata/v/https/plugins.gradle.org/m2/gradle/plugin/de/solugo/gradle/node-gradle-plugin/maven-metadata.xml.svg?style=for-the-badge)](https://plugins.gradle.org/plugin/de.solugo.gradle.node)
+[![Travis](https://img.shields.io/travis/solugo/gradle-node-plugin.svg?style=for-the-badge)](https://travis-ci.org/solugo/gradle-node-plugin)
+[![License](https://img.shields.io/github/license/solugo/gradle-node-plugin.svg?style=for-the-badge)](https://github.com/solugo/gradle-node-plugin/blob/master/LICENSE)
+[![Maven metadata URI](https://img.shields.io/maven-metadata/v/https/plugins.gradle.org/m2/gradle/plugin/de/solugo/gradle/gradle-node-plugin/maven-metadata.xml.svg?style=for-the-badge)](https://plugins.gradle.org/plugin/de.solugo.gradle.node)
 
-# Gradle Node Plugin
-This plugin allows to use node script and tools via gradle.
+# Gradle NodeJs Plugin
+This plugin allows to use NodeJs script and tools via gradle. NodeJs will be downloaded automatically and reused across 
+execution.
+
+## Configuration
+<pre>
+node {
+  version = '9.11.0'
+}
+</pre>
 
 ## Task rules
 
 ### Node
-##### Syntax
-<pre>
-gradle node<alias> -Pargs="..."
-</pre>
+Run node script
 
-##### Example
 <pre>
-gradle node -Pargs="--version"
+gradle node&lt;ScriptName&gt; -Pargs="..." // node &lt;script-name&gt;.js &lt;args&gt;
 </pre>
 
 ### Npm
-##### Syntax
+Run npm script
+
 <pre>
-gradle npm<task> -Pargs="..."
+gradle npm&lt;TaskName&gt; -Pargs="..." // npm &lt;task-name&gt; &lt;args&gt;
 </pre>
 
-##### Example
+### Yarn
+Run yarn task
+
 <pre>
-gradle npm -Pargs="--version"
+gradle yarn&lt;TaskName&gt; -Pargs="..." // npm &lt;task-name&gt; &lt;args&gt;
 </pre>
+
 
 ### Npx
-##### Syntax
-<pre>
-gradle npx<module> -Pargs="..."
-</pre>
+Run node module
 
-##### Example
 <pre>
-gradle npxWebpack -Pargs="--version"
+gradle npx&lt;ModuleName&gt; -Pargs="..." // npx &lt;module-name&gt;.js &lt;args&gt;
 </pre>
 
 
-## Examples
+## Tasks
 
-### Using Npm
-##### Initialize default package.json
+### NodeJsTask
 <pre>
-gradle npmInit -Pargs="-f"
-</pre>
-
-##### Install dependency
-<pre>
-gradle npmInstall -Pargs="--save-dev webpack-cli"
-</pre>
-
-
-### Using webpack
-
-##### Setup
-<pre>
-gradle --console=plain npmInit
-gradle npmInstall -Pargs="webpack webpack-cli --save-dev"
-</pre>
-
-##### Modify package.json
-<pre>
-"scripts": {
-  "compile": "webpack-cli --mode=production"
+task("webpack", type: NodeJsTask) {
+    require = ["webpack"]
+    executable = "webpack"
+    args = ["src/index.js"]
 }
 </pre>
 
-##### Build
-<pre>
-gradle npmRunCompile
-</pre>
+## Examples
 
+### Install development dependency using npm
+<pre>
+gradle npmInstall -Pargs="--save-dev webpack"
+</pre>

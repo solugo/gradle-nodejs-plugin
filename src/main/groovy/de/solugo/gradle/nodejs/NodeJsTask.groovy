@@ -9,7 +9,7 @@ class NodeJsTask<T extends NodeJsTask<T>> extends AbstractExecTask<T> {
     public static final String PROPERTY_ARGS = "args"
     public static final String PROPERTY_INSTALL = "install"
 
-    def install = new ArrayList<String>()
+    def require = new ArrayList<String>()
 
     @Inject
     NodeJsTask() {
@@ -18,29 +18,13 @@ class NodeJsTask<T extends NodeJsTask<T>> extends AbstractExecTask<T> {
 
     NodeJsTask(final Class<T> taskType) {
         super(taskType)
-        this.standardInput = System.in
-        this.standardOutput = System.out
-        this.errorOutput = System.err
     }
 
     @Override
     protected void exec() {
         final NodeJsUtil nodeUtil = NodeJsUtil.getInstance(this.project.nodejs.version)
 
-        final commandLine = new ArrayList<String>(this.getCommandLine())
-        final modules = new ArrayList<String>(this.install)
-
-        if (commandLine.size() > 0) {
-            final exec = nodeUtil.resolveCommand(commandLine.get(0))
-            if (exec != null) {
-                commandLine.set(0, exec.getAbsolutePath())
-            }
-        }
-
-        final String argsProperty = project.getProperties().get(PROPERTY_ARGS)
-        if (argsProperty != null) {
-            commandLine.addAll(argsProperty.split())
-        }
+        final modules = new ArrayList<String>(this.require)
 
         final String installProperty = project.getProperties().get(PROPERTY_INSTALL)
         if (installProperty != null) {
@@ -58,6 +42,21 @@ class NodeJsTask<T extends NodeJsTask<T>> extends AbstractExecTask<T> {
             }
         }
 
+        final commandLine = new ArrayList<String>(this.getCommandLine())
+
+        if (commandLine.size() > 0) {
+            final exec = nodeUtil.resolveCommand(commandLine.get(0))
+            if (exec != null) {
+                commandLine.set(0, exec.getAbsolutePath())
+            }
+        }
+
+        final String argsProperty = project.getProperties().get(PROPERTY_ARGS)
+        if (argsProperty != null) {
+            commandLine.addAll(argsProperty.split())
+        }
+
+
         println("Running ${commandLine.join(" ")}")
 
         this.commandLine(commandLine)
@@ -68,6 +67,9 @@ class NodeJsTask<T extends NodeJsTask<T>> extends AbstractExecTask<T> {
             this.environment['PATH'] = nodeUtil.bin.absolutePath + File.pathSeparator + this.environment['PATH']
         }
 
+        this.standardInput = System.in
+        this.standardOutput = System.out
+        this.errorOutput = System.err
 
         super.exec()
     }

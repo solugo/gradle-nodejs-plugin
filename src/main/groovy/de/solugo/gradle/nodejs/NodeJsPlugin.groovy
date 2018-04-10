@@ -9,7 +9,7 @@ class NodeJsPlugin implements Plugin<Project> {
     void apply(final Project project) {
         project.extensions.create("nodejs", NodeJsExtension)
 
-        project.ext.NodeTask = NodeJsTask
+        project.ext.NodeJsTask = NodeJsTask
 
         final cleanTask = project.tasks.findByPath("clean")
         if (cleanTask != null) {
@@ -20,10 +20,11 @@ class NodeJsPlugin implements Plugin<Project> {
 
         final snakeCase = { String str -> str.replaceAll(/[A-Z]/) { "-" + it.toLowerCase() }.substring(1) }
 
-        project.tasks.addRule("Pattern: npmRun<script>") { String taskName ->
+        project.tasks.addRule("Pattern: npmRun<Script>: Runs npm script") { String taskName ->
             if (project.tasks.findByPath(taskName) == null && taskName.startsWith("npmRun")) {
                 final String target = (taskName - "npmRun")
                 project.tasks.create(taskName, NodeJsTask).doFirst {
+                    require = ["npm"]
                     executable = "npm"
                     if (target.length() > 0) {
                         args = ["run", snakeCase(target)]
@@ -34,22 +35,11 @@ class NodeJsPlugin implements Plugin<Project> {
             }
         }
 
-        project.tasks.addRule("Pattern: npmRequire<package>") { String taskName ->
-            if (project.tasks.findByPath(taskName) == null && taskName.startsWith("npmRequire")) {
-                final String target = (taskName - "npmRequire")
-                project.tasks.create(taskName, NodeJsTask).doFirst {
-                    executable = "npm"
-                    if (target.length() > 0) {
-                        args = ["install", snakeCase(target)]
-                    }
-                }
-            }
-        }
-
-        project.tasks.addRule("Pattern: npm<task>") { String taskName ->
+        project.tasks.addRule("Pattern: npm<Task>: Runs npm task") { String taskName ->
             if (project.tasks.findByPath(taskName) == null && taskName.startsWith("npm")) {
                 final String target = (taskName - "npm")
                 project.tasks.create(taskName, NodeJsTask).doFirst {
+                    require = ["npm"]
                     executable = "npm"
                     if (target.length() > 0) {
                         args = [snakeCase(target)]
@@ -58,10 +48,24 @@ class NodeJsPlugin implements Plugin<Project> {
             }
         }
 
-        project.tasks.addRule("Pattern: npx<task>") { String taskName ->
+        project.tasks.addRule("Pattern: yarn<Task>: Runs yarn task") { String taskName ->
+            if (project.tasks.findByPath(taskName) == null && taskName.startsWith("yarn")) {
+                final String target = (taskName - "yarn")
+                project.tasks.create(taskName, NodeJsTask).doFirst {
+                    require = ["yarnpkg"]
+                    executable = "yarn"
+                    if (target.length() > 0) {
+                        args = [snakeCase(target)]
+                    }
+                }
+            }
+        }
+
+        project.tasks.addRule("Pattern: npx<Module>: Runs npm module") { String taskName ->
             if (project.tasks.findByPath(taskName) == null && taskName.startsWith("npx")) {
                 final String target = (taskName - "npx")
                 project.tasks.create(taskName, NodeJsTask).doFirst {
+                    require = ["npx"]
                     executable = "npx"
                     if (target.length() > 0) {
                         args = [snakeCase(target)]
@@ -70,13 +74,13 @@ class NodeJsPlugin implements Plugin<Project> {
             }
         }
 
-        project.tasks.addRule("Pattern: node<script>") { String taskName ->
+        project.tasks.addRule("Pattern: node<Script>: Runs node script") { String taskName ->
             if (project.tasks.findByPath(taskName) == null && taskName.startsWith("node")) {
                 final String target = (taskName - "node")
                 project.tasks.create(taskName, NodeJsTask).doFirst {
                     executable = "node"
                     if (target.length() > 0) {
-                        args = [snakeCase(target)]
+                        args = ["${snakeCase(target)}.js"]
                     }
                 }
             }
