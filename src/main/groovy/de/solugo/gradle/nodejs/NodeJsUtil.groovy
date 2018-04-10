@@ -27,7 +27,7 @@ class NodeJsUtil {
             platform = "win"
             ext = "zip"
             modules = new File(target, "node_modules")
-            bin = new File(target, "bin")
+            bin = target
         } else if (Os.isFamily(Os.FAMILY_UNIX)) {
             platform = "linux"
             ext = "tar.xz"
@@ -135,18 +135,25 @@ class NodeJsUtil {
 
 
     File resolveCommand(final String command) {
-        final File absoluteFile = new File(command);
+        final String name
+        if (Os.isFamily(Os.FAMILY_WINDOWS)){
+            name = "${command}.cmd"
+        } else {
+            name = command
+        }
+
+        final File absoluteFile = new File(name);
         if (absoluteFile.exists()) {
             return absoluteFile
         }
 
-        final File globalFile = new File(this.bin, command);
+        final File globalFile = new File(this.bin, name);
         if (globalFile.exists()) {
             return globalFile
         }
 
 
-        final File localFile = new File("node_modules/.bin", command);
+        final File localFile = new File("node_modules/.bin", name);
         if (localFile.exists()) {
             return localFile
         }
@@ -209,7 +216,7 @@ class NodeJsUtil {
         ) throws IOException, ArchiverException {
 
             final pos = entryName.indexOf("/")
-            if (pos != -1) {
+            if (pos != -1 && pos < entryName.length() - 1) {
                 super.extractFile(src, dir, inputStream, entryName.substring(pos + 1), entryDate, isDirectory, mode, symlinkDestination)
             }
         }

@@ -24,7 +24,7 @@ class NodeJsPlugin implements Plugin<Project> {
             if (project.tasks.findByPath(taskName) == null && taskName.startsWith("npmRun")) {
                 final String target = (taskName - "npmRun")
                 project.tasks.create(taskName, NodeJsTask).doFirst {
-                    executable = "npm/bin/npm-cli.js"
+                    executable = "npm"
                     if (target.length() > 0) {
                         args = ["run", snakeCase(target)]
                     } else {
@@ -39,7 +39,6 @@ class NodeJsPlugin implements Plugin<Project> {
                 final String target = (taskName - "npmRequire")
                 project.tasks.create(taskName, NodeJsTask).doFirst {
                     executable = "npm"
-                    modules = ["npm"]
                     if (target.length() > 0) {
                         args = ["install", snakeCase(target)]
                     }
