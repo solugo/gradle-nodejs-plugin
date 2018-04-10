@@ -1,6 +1,6 @@
-[![Travis](https://img.shields.io/travis/solugo/gradle-node-plugin.svg?style=for-the-badge)](https://travis-ci.org/solugo/gradle-node-plugin)
-[![License](https://img.shields.io/github/license/solugo/gradle-node-plugin.svg?style=for-the-badge)](https://github.com/solugo/gradle-node-plugin/blob/master/LICENSE)
-[![Maven metadata URI](https://img.shields.io/maven-metadata/v/https/plugins.gradle.org/m2/gradle/plugin/de/solugo/gradle/gradle-node-plugin/maven-metadata.xml.svg?style=for-the-badge)](https://plugins.gradle.org/plugin/de.solugo.gradle.node)
+[![Travis](https://img.shields.io/travis/solugo/gradle-nodejs-plugin.svg?style=for-the-badge)](https://travis-ci.org/solugo/gradle-nodejs-plugin)
+[![License](https://img.shields.io/github/license/solugo/gradle-nodejs-plugin.svg?style=for-the-badge)](https://github.com/solugo/gradle-nodejs-plugin/blob/master/LICENSE)
+[![Maven metadata URI](https://img.shields.io/maven-metadata/v/https/plugins.gradle.org/m2/gradle/plugin/de/solugo/gradle/gradle-nodejs-plugin/maven-metadata.xml.svg?style=for-the-badge)](https://plugins.gradle.org/plugin/de.solugo.gradle.node)
 
 # Gradle NodeJs Plugin
 This plugin allows to use NodeJs script and tools via gradle. NodeJs will be downloaded automatically and reused across 
