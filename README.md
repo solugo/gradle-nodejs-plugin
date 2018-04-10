@@ -33,7 +33,7 @@ gradle npm&lt;TaskName&gt; -Pargs="..." // npm &lt;task-name&gt; &lt;args&gt;
 Run yarn task
 
 <pre>
-gradle yarn&lt;TaskName&gt; -Pargs="..." // npm &lt;task-name&gt; &lt;args&gt;
+gradle yarn&lt;TaskName&gt; -Pargs="..." // yarn &lt;task-name&gt; &lt;args&gt;
 </pre>
 
 
