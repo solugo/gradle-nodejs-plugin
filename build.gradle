@@ -29,6 +29,7 @@ pluginBundle {
         nodejsPlugin {
             id = 'de.solugo.gradle.nodejs'
             displayName = 'Gradle NodeJs plugin'
+            description = 'Plugin for nodejs support in gradle'
             tags = ['nodejs', 'node', 'npm', 'npx', 'yarn']
         }
     }
