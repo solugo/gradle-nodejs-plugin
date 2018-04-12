@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'de.solugo.gradle'
-version '0.1.0'
+version '0.2.0'
 
 repositories {
     mavenCentral()
@@ -29,8 +29,14 @@ pluginBundle {
         nodejsPlugin {
             id = 'de.solugo.gradle.nodejs'
             displayName = 'Gradle NodeJs plugin'
-            description = 'Plugin for nodejs support in gradle'
+            description = 'Plugin for Node.js support in gradle'
             tags = ['nodejs', 'node', 'npm', 'npx', 'yarn']
+        }
+        webpackPlugin {
+            id = 'de.solugo.gradle.webpack'
+            displayName = 'Gradle Webpack plugin'
+            description = 'Plugin for Webpack support in gradle'
+            tags = ['webpack']
         }
     }
 }

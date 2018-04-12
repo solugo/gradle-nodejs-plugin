@@ -31,12 +31,12 @@ class NodeJsTask<T extends NodeJsTask<T>> extends AbstractExecTask<T> {
             modules.addAll(installProperty.split())
         }
 
-        modules.removeAll {nodeUtil.resolveModule(it) != null}
+        modules.removeAll { nodeUtil.resolveModule(it) != null }
 
         if (!modules.empty) {
             this.project.exec {
                 executable = nodeUtil.resolveCommand("npm")
-                args =  ["install"] + modules
+                args = ["install"] + modules
                 standardOutput = new ByteArrayOutputStream()
                 errorOutput = new ByteArrayOutputStream()
             }
@@ -56,22 +56,23 @@ class NodeJsTask<T extends NodeJsTask<T>> extends AbstractExecTask<T> {
             commandLine.addAll(argsProperty.split())
         }
 
+        try {
+            this.commandLine(commandLine)
 
-        println("Running ${commandLine.join(" ")}")
+            if (this.environment['Path'] != null) {
+                this.environment['Path'] = nodeUtil.bin.absolutePath + File.pathSeparator + this.environment['Path']
+            } else {
+                this.environment['PATH'] = nodeUtil.bin.absolutePath + File.pathSeparator + this.environment['PATH']
+            }
 
-        this.commandLine(commandLine)
+            this.standardInput = System.in
+            this.standardOutput = System.out
+            this.errorOutput = System.err
 
-        if (this.environment['Path'] != null) {
-            this.environment['Path'] = nodeUtil.bin.absolutePath + File.pathSeparator + this.environment['Path']
-        } else {
-            this.environment['PATH'] = nodeUtil.bin.absolutePath + File.pathSeparator + this.environment['PATH']
+            super.exec()
+        } catch (Exception ex) {
+            throw new RuntimeException("Error running ${commandLine.join(" ")}", ex)
         }
-
-        this.standardInput = System.in
-        this.standardOutput = System.out
-        this.errorOutput = System.err
-
-        super.exec()
     }
 
 }
