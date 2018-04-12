@@ -1,8 +1,11 @@
+plugins {
+    id('groovy')
+    id('maven')
+    id('com.gradle.plugin-publish') version "0.9.10"
+}
+
 group 'de.solugo.gradle'
 version '0.1.0'
-
-apply plugin: 'groovy'
-apply plugin: 'maven'
 
 repositories {
     mavenCentral()
@@ -14,10 +17,19 @@ dependencies {
     compile "org.codehaus.plexus:plexus-archiver:3.5"
     compile "org.codehaus.plexus:plexus-container-default:1.7.1"
 
-
     testCompile gradleTestKit()
     testCompile "junit:junit:4.12"
+}
 
+pluginBundle {
+    website = 'https://github.com/solugo/gradle-nodejs-plugin'
+    vcsUrl = 'https://github.com/solugo/gradle-nodejs-plugin'
 
-
+    plugins {
+        nodejsPlugin {
+            id = 'de.solugo.gradle.nodejs'
+            displayName = 'Gradle NodeJs plugin'
+            tags = ['nodejs', 'node', 'npm', 'npx', 'yarn']
+        }
+    }
 }

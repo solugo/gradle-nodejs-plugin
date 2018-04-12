@@ -7,3 +7,4 @@ branches:
   cache:
     directories:
       - $HOME/.gradle
+script: ./gradlew clean publishPlugins
