@@ -10,5 +10,5 @@ branches:
 script: ./gradlew clean publishPlugins
 after_success:
   if [ "${TRAVIS_BRANCH}" == "master" ] && [ "$TRAVIS_PULL_REQUEST" == "false" ]; then
-    ./gradlew publishPlugins -Pgradle.publish.key="${publishKey}" -Pgradle.publish.secret="${publishSecret}"
+    ./gradlew publishPlugins
   fi
