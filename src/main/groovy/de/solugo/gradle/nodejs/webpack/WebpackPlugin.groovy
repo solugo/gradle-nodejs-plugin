@@ -12,14 +12,12 @@ class WebpackPlugin implements Plugin<Project> {
         project.pluginManager.apply(NodeJsPlugin)
 
         project.tasks.create(name: "webpack", type: NodeJsTask) {
-            dependsOn "npmInstall"
             require = ["webpack", "webpack-cli"]
             executable = "webpack-cli"
             args = ["--mode=production"]
         }
 
         project.tasks.create(name: "webpackWatch", type: NodeJsTask) {
-            dependsOn "npmInstall"
             require = ["webpack", "webpack-cli"]
             executable = "webpack-cli"
             args = ["--mode=development", "--watch"]
