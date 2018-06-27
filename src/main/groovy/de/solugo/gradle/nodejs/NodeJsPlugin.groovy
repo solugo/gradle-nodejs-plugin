@@ -80,7 +80,7 @@ class NodeJsPlugin implements Plugin<Project> {
                 project.tasks.create(taskName, NodeJsTask).doFirst {
                     executable = "node"
                     if (target.length() > 0) {
-                        args = ["${snakeCase(target)}.js"]
+                        args = [project.extensions.nodejs.scriptBasePath + "${snakeCase(target)}.js"]
                     }
                 }
             }
