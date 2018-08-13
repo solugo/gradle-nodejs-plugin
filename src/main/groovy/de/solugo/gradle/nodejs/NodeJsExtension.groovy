@@ -1,6 +1,6 @@
 package de.solugo.gradle.nodejs
 
 class NodeJsExtension {
-    String version = "9.11.1"
+    String version = "10.8.0"
 	String scriptBasePath = "";
 }

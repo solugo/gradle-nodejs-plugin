@@ -27,6 +27,7 @@ class NodeJsTask<T extends NodeJsTask<T>> extends AbstractExecTask<T> {
         final modules = new ArrayList<String>(this.require)
 
         final String installProperty = project.getProperties().get(PROPERTY_INSTALL)
+
         if (installProperty != null) {
             modules.addAll(installProperty.split())
         }
@@ -35,6 +36,11 @@ class NodeJsTask<T extends NodeJsTask<T>> extends AbstractExecTask<T> {
 
         if (!modules.empty) {
             this.project.exec {
+                if (environment['Path'] != null) {
+                    environment['Path'] = nodeUtil.bin.absolutePath + File.pathSeparator + this.environment['Path']
+                } else {
+                    environment['PATH'] = nodeUtil.bin.absolutePath + File.pathSeparator + this.environment['PATH']
+                }
                 executable = nodeUtil.resolveCommand("npm")
                 args = ["install"] + modules
                 standardOutput = new ByteArrayOutputStream()
