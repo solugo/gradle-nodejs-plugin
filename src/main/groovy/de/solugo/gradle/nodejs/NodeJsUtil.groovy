@@ -28,14 +28,14 @@ class NodeJsUtil {
             ext = "zip"
             modules = new File(target, "node_modules")
             bin = target
-        } else if (Os.isFamily(Os.FAMILY_UNIX)) {
-            platform = "linux"
-            ext = "tar.xz"
-            modules = new File(target, "lib/node_modules")
-            bin = new File(target, "bin")
         } else if (Os.isFamily(Os.FAMILY_MAC)) {
             platform = "darwin"
             ext = "tar.gz"
+            modules = new File(target, "lib/node_modules")
+            bin = new File(target, "bin")
+        } else if (Os.isFamily(Os.FAMILY_UNIX)) {
+            platform = "linux"
+            ext = "tar.xz"
             modules = new File(target, "lib/node_modules")
             bin = new File(target, "bin")
         } else {
