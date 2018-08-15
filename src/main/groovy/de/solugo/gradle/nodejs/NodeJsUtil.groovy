@@ -36,13 +36,13 @@ class NodeJsUtil {
         } else if (Os.isFamily(Os.FAMILY_MAC)) {
             platform = "darwin"
             ext = "tar.gz"
-            modules = new File(target, "lib")
+            modules = new File(target, "lib/node_modules")
             bin = new File(target, "bin")
         } else {
             throw new UnsupportedOperationException("Platform not supported")
         }
 
-        if (Os.isArch("amd64")) {
+        if (Os.isArch("amd64") || Os.isArch("x86_64")) {
             arch = "x64"
         } else if (Os.isArch("x86")) {
             arch = "x86"
