@@ -1,10 +1,12 @@
 plugins {
     id "groovy"
+    id "maven-publish"
+    id "java-gradle-plugin"
     id 'com.gradle.plugin-publish' version "0.10.0"
 }
 
-group 'de.solugo.gradle'
-version '0.5.1'
+group 'gradle.plugin.de.solugo'
+version '0.5.2'
 
 repositories {
     mavenCentral()
@@ -20,19 +22,30 @@ dependencies {
     testCompile "junit:junit:4.12"
 }
 
+gradlePlugin {
+    plugins {
+        nodejsPlugin {
+            id = "de.solugo.gradle.nodejs"
+            implementationClass = "de.solugo.gradle.nodejs.NodeJsPlugin"
+        }
+        webpackPlugin {
+            id = "de.solugo.gradle.webpack"
+            implementationClass = "de.solugo.gradle.nodejs.webpack.WebpackPlugin"
+        }
+    }
+}
+
 pluginBundle {
     website = 'https://github.com/solugo/gradle-nodejs-plugin'
-    vcsUrl = 'https://github.com/solugo/gradle-nodejs-plugin'
+    vcsUrl = 'https://github.com/solugo/gradle-nodejs-plugin.git'
 
     plugins {
         nodejsPlugin {
-            id = 'de.solugo.gradle.nodejs'
             displayName = 'Gradle NodeJs plugin'
             description = 'Plugin for Node.js support in gradle'
             tags = ['nodejs', 'node', 'npm', 'npx', 'yarn']
         }
         webpackPlugin {
-            id = 'de.solugo.gradle.webpack'
             displayName = 'Gradle Webpack plugin'
             description = 'Plugin for Webpack support in gradle'
             tags = ['webpack']

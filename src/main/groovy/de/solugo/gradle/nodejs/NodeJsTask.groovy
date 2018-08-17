@@ -1,8 +1,8 @@
 package de.solugo.gradle.nodejs
 
 import org.apache.tools.ant.taskdefs.condition.Os
-import org.apache.tools.ant.types.Environment
 import org.gradle.api.tasks.AbstractExecTask
+import org.gradle.api.tasks.Input
 
 import javax.inject.Inject
 
@@ -11,6 +11,7 @@ class NodeJsTask<T extends NodeJsTask<T>> extends AbstractExecTask<T> {
     public static final String PROPERTY_ARGS = "args"
     public static final String PROPERTY_INSTALL = "install"
 
+    @Input
     def require = new ArrayList<String>()
 
     @Inject

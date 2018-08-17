@@ -8,8 +8,13 @@ execution.
 
 ## Configuration
 <pre>
+plugins {
+    id "de.solugo.gradle.nodejs" version "..."
+}
+
 nodejs {
-  version = '9.11.0'
+    version = '10.8.0'
+    rootPath = 'subpath'
 }
 </pre>
 
@@ -67,9 +72,17 @@ gradle npmInstall -Pargs="--save-dev webpack"
 # Gradle Webpack Plugin
 This plugin allows to use [Webpack](https://webpack.js.org/) bundler via gradle. Webpack is automatically added to the processResources task.
 
+## Configuration
+<pre>
+plugins {
+    id "de.solugo.gradle.webpack" version "..."
+}
+</pre>
+
 ## Tasks
 
 ### Webpack
+
 Run node script
 
 <pre>
