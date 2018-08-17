@@ -118,50 +118,6 @@ class NodeJsUtil {
         return this.bin
     }
 
-    File resolveModule(final String module) {
-        final File globalFile = new File(this.modules, module);
-        if (globalFile.exists()) {
-            return globalFile
-        }
-
-
-        final File localFile = new File("node_modules", module);
-        if (localFile.exists()) {
-            return localFile
-        }
-
-        return null
-    }
-
-
-    File resolveCommand(final String command) {
-        final String name
-        if (Os.isFamily(Os.FAMILY_WINDOWS)){
-            name = "${command}.cmd"
-        } else {
-            name = command
-        }
-
-        final File absoluteFile = new File(name);
-        if (absoluteFile.exists()) {
-            return absoluteFile
-        }
-
-        final File globalFile = new File(this.bin, name);
-        if (globalFile.exists()) {
-            return globalFile
-        }
-
-
-        final File localFile = new File("node_modules/.bin", name);
-        if (localFile.exists()) {
-            return localFile
-        }
-
-        return null
-    }
-
-
     private static class NodeJsTarXzUnArchiver extends TarXZUnArchiver {
         @Override
         protected void extractFile(
