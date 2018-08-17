@@ -8,6 +8,7 @@ class NodeJsPlugin implements Plugin<Project> {
     @Override
     void apply(final Project project) {
         project.extensions.create("nodejs", NodeJsExtension)
+        project.nodejs.rootPath = project.projectDir.absolutePath
 
         project.ext.NodeJsTask = NodeJsTask
 
