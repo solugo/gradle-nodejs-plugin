@@ -1,6 +1,6 @@
 [![Travis](https://img.shields.io/travis/solugo/gradle-nodejs-plugin.svg?style=for-the-badge)](https://travis-ci.org/solugo/gradle-nodejs-plugin)
 [![License](https://img.shields.io/github/license/solugo/gradle-nodejs-plugin.svg?style=for-the-badge)](https://github.com/solugo/gradle-nodejs-plugin/blob/master/LICENSE)
-[![Version](https://img.shields.io/maven-metadata/v/https/plugins.gradle.org/m2/gradle/plugin/de/solugo/gradle-nodejs-plugin/maven-metadata.xml.svg?style=for-the-badge)](https://plugins.gradle.org/m2/gradle/plugin/de/solugo/gradle-nodejs-plugin/)
+[![Version](https://img.shields.io/maven-metadata/v/https/plugins.gradle.org/m2/de/solugo/gradle/gradle-nodejs-plugin/maven-metadata.xml.svg?style=for-the-badge)](https://plugins.gradle.org/m2/de/solugo/gradle/gradle-nodejs-plugin/)
 
 # [Gradle Node.js Plugin](https://plugins.gradle.org/plugin/de.solugo.gradle.nodejs)
 This plugin allows to use [Node.js](https://nodejs.org) script and tools via gradle. NodeJs will be downloaded automatically and reused across 
