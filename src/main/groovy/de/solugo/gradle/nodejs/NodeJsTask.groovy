@@ -1,6 +1,10 @@
 package de.solugo.gradle.nodejs
 
 import org.apache.tools.ant.taskdefs.condition.Os
+import org.gradle.api.internal.file.archive.compression.AbstractArchiver
+import org.gradle.api.resources.MissingResourceException
+import org.gradle.api.resources.ReadableResource
+import org.gradle.api.resources.ResourceException
 import org.gradle.api.tasks.AbstractExecTask
 import org.gradle.api.tasks.Input
 
@@ -25,7 +29,7 @@ class NodeJsTask<T extends NodeJsTask<T>> extends AbstractExecTask<T> {
 
     @Override
     protected void exec() {
-        final NodeJsUtil nodeJsUtil = NodeJsUtil.getInstance(this.project.nodejs.version)
+        final NodeJsUtil nodeJsUtil = NodeJsUtil.getInstance(this.project, this.project.nodejs.version)
 
         final modules = new ArrayList<String>(this.require)
 
@@ -123,8 +127,6 @@ class NodeJsTask<T extends NodeJsTask<T>> extends AbstractExecTask<T> {
         builder.append(File.pathSeparator)
         builder.append(nodeJsUtil.bin.absolutePath)
         builder.append(File.pathSeparator)
-
-        println("Environment: " + builder.toString())
 
         if (environment['Path'] != null) {
             builder.append(environment['Path'])
