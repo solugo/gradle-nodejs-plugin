@@ -5,8 +5,8 @@ plugins {
     id 'com.gradle.plugin-publish' version "0.10.0"
 }
 
-group 'gradle.plugin.de.solugo'
-version '0.5.2'
+group 'de.solugo.gradle'
+version '0.6.0'
 
 repositories {
     mavenCentral()
@@ -15,8 +15,7 @@ repositories {
 dependencies {
     compile gradleApi()
     compile localGroovy()
-    compile "org.codehaus.plexus:plexus-archiver:3.5"
-    compile "org.codehaus.plexus:plexus-container-default:1.7.1"
+    compile "org.tukaani:xz:1.8"
 
     testCompile gradleTestKit()
     testCompile "junit:junit:4.12"

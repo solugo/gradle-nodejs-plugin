@@ -1,17 +1,16 @@
 package de.solugo.gradle.nodejs
 
+
 import org.apache.tools.ant.taskdefs.condition.Os
-import org.codehaus.plexus.archiver.ArchiverException
-import org.codehaus.plexus.archiver.UnArchiver
-import org.codehaus.plexus.archiver.tar.TarGZipUnArchiver
-import org.codehaus.plexus.archiver.tar.TarXZUnArchiver
-import org.codehaus.plexus.archiver.zip.ZipUnArchiver
-import org.codehaus.plexus.logging.Logger
-import org.codehaus.plexus.logging.console.ConsoleLogger
+import org.gradle.api.Project
+import org.gradle.api.file.FileTree
+
+import java.nio.file.Files
+import java.nio.file.StandardCopyOption
 
 class NodeJsUtil {
 
-    static synchronized NodeJsUtil getInstance(String version) {
+    static synchronized NodeJsUtil getInstance(Project project, String version) {
         File home = new File(System.getProperty("user.home"))
         File cache = new File(home, ".nodejs")
         File target = new File(cache, version)
@@ -35,7 +34,7 @@ class NodeJsUtil {
             bin = new File(target, "bin")
         } else if (Os.isFamily(Os.FAMILY_UNIX)) {
             platform = "linux"
-            ext = "tar.xz"
+            ext = "tar.gz"
             modules = new File(target, "lib/node_modules")
             bin = new File(target, "bin")
         } else {
@@ -69,23 +68,27 @@ class NodeJsUtil {
 
                 target.mkdirs()
 
-                final UnArchiver unArchiver;
-
-                if (ext == "tar.xz") {
-                    unArchiver = new NodeJsTarXzUnArchiver()
-                } else if (ext == "tar.gz") {
-                    unArchiver = new NodeJsTarGzUnArchiver()
+                final FileTree tree
+                if (ext == "tar.gz") {
+                    tree = project.tarTree(downloadFile)
                 } else if (ext == "zip") {
-                    unArchiver = new NodeJsZipUnArchiver()
+                    tree = project.zipTree(downloadFile)
                 } else {
                     throw new UnsupportedOperationException("Archive ${downloadFile.name} not supported")
                 }
 
-                unArchiver.sourceFile = downloadFile
-                unArchiver.enableLogging(new ConsoleLogger(Logger.LEVEL_ERROR, "root"))
-                unArchiver.overwrite = true
-                unArchiver.destFile = target
-                unArchiver.extract()
+                tree.visit { source ->
+                    final name = source.relativePath.pathString
+                    final int start = name.indexOf(File.separator)
+                    if (start != -1) {
+                        final destination = new File(target, name.substring(name.indexOf(File.separator)))
+                        if (source.isDirectory()) {
+                            destination.mkdirs()
+                        } else {
+                            source.copyTo(destination)
+                        }
+                    }
+                }
             } catch (final Throwable throwable) {
                 target.delete()
                 throw throwable
@@ -118,63 +121,4 @@ class NodeJsUtil {
         return this.bin
     }
 
-    private static class NodeJsTarXzUnArchiver extends TarXZUnArchiver {
-        @Override
-        protected void extractFile(
-                final File src,
-                final File dir,
-                final InputStream inputStream,
-                final String entryName,
-                final Date entryDate,
-                final boolean isDirectory,
-                final Integer mode,
-                final String symlinkDestination
-        ) throws IOException, ArchiverException {
-
-            final pos = entryName.indexOf("/")
-            if (pos != -1) {
-                super.extractFile(src, dir, inputStream, entryName.substring(pos + 1), entryDate, isDirectory, mode, symlinkDestination)
-            }
-        }
-    }
-
-    private static class NodeJsTarGzUnArchiver extends TarGZipUnArchiver {
-        @Override
-        protected void extractFile(
-                final File src,
-                final File dir,
-                final InputStream inputStream,
-                final String entryName,
-                final Date entryDate,
-                final boolean isDirectory,
-                final Integer mode,
-                final String symlinkDestination
-        ) throws IOException, ArchiverException {
-
-            final pos = entryName.indexOf("/")
-            if (pos != -1) {
-                super.extractFile(src, dir, inputStream, entryName.substring(pos + 1), entryDate, isDirectory, mode, symlinkDestination)
-            }
-        }
-    }
-
-    private static class NodeJsZipUnArchiver extends ZipUnArchiver {
-        @Override
-        protected void extractFile(
-                final File src,
-                final File dir,
-                final InputStream inputStream,
-                final String entryName,
-                final Date entryDate,
-                final boolean isDirectory,
-                final Integer mode,
-                final String symlinkDestination
-        ) throws IOException, ArchiverException {
-
-            final pos = entryName.indexOf("/")
-            if (pos != -1 && pos < entryName.length() - 1) {
-                super.extractFile(src, dir, inputStream, entryName.substring(pos + 1), entryDate, isDirectory, mode, symlinkDestination)
-            }
-        }
-    }
 }
