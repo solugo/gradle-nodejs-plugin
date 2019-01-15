@@ -1,12 +1,8 @@
 package de.solugo.gradle.nodejs
 
-
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.api.Project
 import org.gradle.api.file.FileTree
-
-import java.nio.file.Files
-import java.nio.file.StandardCopyOption
 
 class NodeJsUtil {
 
@@ -49,7 +45,7 @@ class NodeJsUtil {
             throw new UnsupportedOperationException("Architecture not supported")
         }
 
-        if (!target.exists()) {
+        if (!target.exists() || target.listFiles().size() == 0) {
             final root = "node-v${version}-${platform}-${arch}"
             final file = "${root}.${ext}"
             final downloadFile = new File(cache, file)
@@ -79,9 +75,10 @@ class NodeJsUtil {
 
                 tree.visit { source ->
                     final name = source.relativePath.pathString
-                    final int start = name.indexOf(File.separator)
+                    final int start = name.indexOf("/")
+
                     if (start != -1) {
-                        final destination = new File(target, name.substring(name.indexOf(File.separator)))
+                        final destination = new File(target, name.substring(start + 1))
                         if (source.isDirectory()) {
                             destination.mkdirs()
                         } else {
