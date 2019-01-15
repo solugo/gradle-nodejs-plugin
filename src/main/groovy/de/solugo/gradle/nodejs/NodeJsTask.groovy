@@ -1,10 +1,6 @@
 package de.solugo.gradle.nodejs
 
 import org.apache.tools.ant.taskdefs.condition.Os
-import org.gradle.api.internal.file.archive.compression.AbstractArchiver
-import org.gradle.api.resources.MissingResourceException
-import org.gradle.api.resources.ReadableResource
-import org.gradle.api.resources.ResourceException
 import org.gradle.api.tasks.AbstractExecTask
 import org.gradle.api.tasks.Input
 
@@ -89,22 +85,17 @@ class NodeJsTask<T extends NodeJsTask<T>> extends AbstractExecTask<T> {
             name = command
         }
 
-        final File absoluteFile = new File(name);
-        if (absoluteFile.exists()) {
-            return absoluteFile
+        final File[] files = [
+                new File(nodeJsUtil.bin, name),
+                new File(this.joinPaths(this.project.nodejs.rootPath, "node_modules", ".bin", name)),
+                new File(name)
+        ]
+
+        for (File file : files){
+            if (file.exists()) return file
         }
 
-        final File globalFile = new File(nodeJsUtil.bin, name)
-        if (globalFile.exists()) {
-            return globalFile
-        }
-
-        final File localFile = new File(this.joinPaths(this.project.nodejs.rootPath, "node_modules", ".bin", name))
-        if (localFile.exists()) {
-            return localFile
-        }
-
-        return null
+        throw new RuntimeException("Could not find '$command' at $files")
     }
 
     protected File resolveModule(final NodeJsUtil nodeJsUtil, final String module) {
