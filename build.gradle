@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'de.solugo.gradle'
-version '0.6.1'
+version '0.6.2'
 
 repositories {
     mavenCentral()
@@ -15,7 +15,8 @@ repositories {
 dependencies {
     compile gradleApi()
     compile localGroovy()
-    compile "org.tukaani:xz:1.8"
+    compile "org.apache.commons:commons-compress:1.18"
+
 
     testCompile gradleTestKit()
     testCompile "junit:junit:4.12"

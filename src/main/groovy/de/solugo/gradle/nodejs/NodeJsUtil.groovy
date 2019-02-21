@@ -1,8 +1,22 @@
 package de.solugo.gradle.nodejs
 
+import org.apache.commons.compress.archivers.ArchiveEntry
+import org.apache.commons.compress.archivers.ArchiveInputStream
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream
+import org.apache.commons.compress.archivers.tar.TarConstants
+import org.apache.commons.compress.archivers.zip.ZipArchiveInputStream
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream
+import org.apache.commons.compress.utils.IOUtils
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.api.Project
 import org.gradle.api.file.FileTree
+
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.nio.file.attribute.PosixFilePermission
+import java.nio.file.attribute.PosixFilePermissions
+import java.util.zip.ZipEntry
 
 class NodeJsUtil {
 
@@ -64,28 +78,56 @@ class NodeJsUtil {
 
                 target.mkdirs()
 
-                final FileTree tree
+                final ArchiveInputStream inputStream
                 if (ext == "tar.gz") {
-                    tree = project.tarTree(downloadFile)
+                    inputStream = new TarArchiveInputStream(new GzipCompressorInputStream(new FileInputStream(downloadFile)));
                 } else if (ext == "zip") {
-                    tree = project.zipTree(downloadFile)
+                    inputStream = new ZipArchiveInputStream(new FileInputStream(downloadFile))
                 } else {
                     throw new UnsupportedOperationException("Archive ${downloadFile.name} not supported")
                 }
 
-                tree.visit { source ->
-                    final name = source.relativePath.pathString
+                ArchiveEntry entry = inputStream.nextEntry
+                while (entry != null) {
+                    final name = entry.name
                     final int start = name.indexOf("/")
 
                     if (start != -1) {
                         final destination = new File(target, name.substring(start + 1))
-                        if (source.isDirectory()) {
+                        if (entry.isDirectory()) {
                             destination.mkdirs()
                         } else {
-                            source.copyTo(destination)
+                            if (entry instanceof TarArchiveEntry) {
+
+                                if (entry.isSymbolicLink()) {
+                                    Files.createSymbolicLink(
+                                            destination.toPath(),
+                                            Paths.get(entry.linkName)
+                                    )
+                                } else {
+                                    destination.withDataOutputStream {
+                                        IOUtils.copy(inputStream, it)
+                                    }
+                                }
+
+                                final ownerValue = "$entry.mode".substring(0,1).toInteger()
+                                destination.setExecutable((ownerValue & 1) == 1)
+                                destination.setWritable((ownerValue & 2) == 2)
+                                destination.setReadable((ownerValue & 4) == 4)
+
+                            } else {
+
+                                destination.withDataOutputStream {
+                                    IOUtils.copy(inputStream, it)
+                                }
+
+                            }
                         }
                     }
+
+                    entry = inputStream.nextEntry
                 }
+
             } catch (final Throwable throwable) {
                 target.delete()
                 throw throwable
