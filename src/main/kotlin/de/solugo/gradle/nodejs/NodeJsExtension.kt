@@ -1,7 +1,6 @@
 package de.solugo.gradle.nodejs
 
 import org.gradle.api.Project
-import org.gradle.api.specs.Spec
 import org.gradle.process.ExecSpec
 import java.io.File
 
@@ -16,17 +15,21 @@ class NodeJsExtension(private val project: Project) {
         project.provider { project.projectDir }
     )
 
-    val instance; get() = NodeJsRegistry.resolve(
-        version = version.get(),
-        cacheFolder = cachePath.get(),
-        onInstall = { version, folder -> project.logger.lifecycle("Installing Node.js v$version to $folder")}
-    )
+    val instance
+        get() = NodeJsRegistry.resolve(
+            version = version.get(),
+            cacheFolder = cachePath.get(),
+            onInstall = { version, folder ->
+                project.logger.lifecycle("Installing Node.js v$version to $folder")
+            }
+        )
 
     fun exec(action: NodeJsExecSpec.() -> Unit) {
         project.exec { spec ->
             spec.workingDir = rootPath.get()
             action(object : NodeJsExecSpec, ExecSpec by spec {
                 override fun resolveBinary(name: String) = resolve(
+                    "binary $name",
                     instance.binFolder,
                     instance.modulesFolder.resolve(".bin"),
                     workingDir.resolve("node_modules").resolve(".bin"),
@@ -35,19 +38,24 @@ class NodeJsExtension(private val project: Project) {
                         NodeJsRegistry.Platform.WINDOWS -> it.name == "$name.cmd" || it.name == "$name.exe"
                         else -> it.name == name
                     }
-                } ?: error("Could not resolve binary $name")
+                }
 
                 override fun resolveScript(name: String) = resolve(
+                    "script $name",
                     workingDir,
                     workingDir.resolve("node_modules"),
                     project.projectDir,
                 ) {
                     it.name == name
-                } ?: error("Could not resolve script $name")
-
-                private fun resolve(vararg folders: File, predicate: (File) -> Boolean) = folders.firstNotNullOfOrNull {
-                    it.listFiles()?.firstOrNull(predicate)?.absolutePath
                 }
+
+                private fun resolve(
+                    target: String,
+                    vararg folders: File,
+                    predicate: (File) -> Boolean,
+                ) = folders.firstNotNullOfOrNull {
+                    it.listFiles()?.firstOrNull(predicate)?.absolutePath
+                } ?: error("Could not resolve $target in $folders")
             })
         }
     }

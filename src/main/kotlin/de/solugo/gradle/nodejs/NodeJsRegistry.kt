@@ -76,11 +76,9 @@ object NodeJsRegistry {
                     }
 
                     if (entry is TarArchiveEntry) {
-                        entry.mode.toString().toCharArray().map(Char::digitToInt).also { parts ->
-                            destination.setExecutable(entry.mode and "111".toInt(radix = 8) != 0)
-                            destination.setWritable(entry.mode and "222".toInt(radix = 8) != 0)
-                            destination.setReadable(entry.mode and "444".toInt(radix = 8) != 0)
-                        }
+                        destination.setExecutable(entry.mode and "111".toInt(radix = 8) != 0)
+                        destination.setWritable(entry.mode and "222".toInt(radix = 8) != 0)
+                        destination.setReadable(entry.mode and "444".toInt(radix = 8) != 0)
                     }
                 }
             }
