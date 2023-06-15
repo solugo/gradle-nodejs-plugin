@@ -22,9 +22,10 @@ jobs:
       - name: Calculate version
         run: curl -Ls https://solugo.github.io/gitversion/run.sh | GITVERSION=v0.0.7 bash
       - name: Build And Test
-        run: ./gradlew clean test
+        run: ./gradlew clean test -Pversion=$VERSION
       - name: Publish Plugin
-        run: ./gradlew publishPlugins
+        run: ./gradlew publishPlugins -Pversion=$VERSION
+        if: github.ref == 'refs/heads/master'
         env:
           GRADLE_PUBLISH_KEY: ${{ secrets.GRADLE_PUBLISH_KEY }}
           GRADLE_PUBLISH_SECRET: ${{ secrets.GRADLE_PUBLISH_SECRET }}
