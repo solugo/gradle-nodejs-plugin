@@ -15,6 +15,18 @@ class NodeJsExtension(private val project: Project) {
         project.provider { project.projectDir }
     )
 
+    fun version(value: Any?) {
+        version.set(value?.toString())
+    }
+
+    fun cachePath(value: Any?) {
+        cachePath.set(value?.let { project.file(it) } )
+    }
+
+    fun rootPath(value: Any?) {
+        rootPath.set(value?.let { project.file(it) } )
+    }
+
     val instance
         get() = NodeJsRegistry.resolve(
             version = version.get(),
@@ -59,9 +71,32 @@ class NodeJsExtension(private val project: Project) {
         }
     }
 
+    fun execBinary(binary: String, vararg args: String) {
+        exec {
+            commandLine(
+                buildList {
+                    add(resolveBinary(binary))
+                    addAll(args)
+                }
+            )
+        }
+    }
+
+    fun execScript(script: String, vararg args: String) {
+        exec {
+            commandLine(
+                buildList {
+                    add(resolveScript(script))
+                    addAll(args)
+                }
+            )
+        }
+    }
+
+
     fun execNode(vararg args: String) {
         execNode {
-            commandLine(args)
+            commandLine(*args)
         }
     }
 
@@ -77,7 +112,7 @@ class NodeJsExtension(private val project: Project) {
 
     fun execNpm(vararg args: String) {
         execNpm {
-            commandLine(args)
+            commandLine(*args)
         }
     }
 
@@ -93,7 +128,7 @@ class NodeJsExtension(private val project: Project) {
 
     fun execNpx(vararg args: String) {
         execNpx {
-            commandLine(args)
+            commandLine(*args)
         }
     }
 

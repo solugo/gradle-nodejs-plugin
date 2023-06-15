@@ -54,5 +54,31 @@ gradle npx&lt;ModuleName&gt; -Pargs="..." // npx &lt;module-name&gt;.js &lt;args
 
 ### Install development dependency using npm
 <pre>
-gradle npmInstall -Pargs="--save-dev webpack"
+gradle npmInstall -Pargs="--save-dev react"
 </pre>
+
+### Build react frontend
+```kotlin
+nodejs {
+    rootPath("./frontend")
+}
+
+tasks.create("buildFrontend") {
+    doFirst {
+        nodejs.execNpm("ci")
+        nodejs.execNpm("run", "build")
+    }
+}
+```
+
+### Execute test for a specific nodejs package
+```kotlin
+tasks.create("testPackage") {
+    doFirst {
+        nodejs.exec {
+            workingDir("../package")
+            args(resolveBinary("npm"), "run", "test")
+        }
+    }
+}
+```
