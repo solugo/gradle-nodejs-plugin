@@ -18,6 +18,7 @@ dependencies {
 
     implementation(gradleApi())
     implementation("org.apache.commons:commons-compress:1.23.0")
+    implementation("org.tukaani:xz:1.9")
 
     testImplementation(gradleTestKit())
     testImplementation("de.solugo.gradle.test:gradle-test-core:$gradleTestVersion")
