@@ -66,7 +66,7 @@ object NodeJsRegistry {
                         entry is TarArchiveEntry && entry.isSymbolicLink -> {
                             Files.createSymbolicLink(
                                 destination.toPath(),
-                                installFolder.resolve(entry.linkName).toPath(),
+                                destination.resolve(entry.linkName).toPath(),
                             )
                         }
 

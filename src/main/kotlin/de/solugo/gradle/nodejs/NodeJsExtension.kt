@@ -31,7 +31,6 @@ class NodeJsExtension(private val project: Project) {
                 override fun resolveBinary(name: String) = resolve(
                     "binary '$name'",
                     instance.binFolder,
-                    instance.modulesFolder.resolve(".bin"),
                     workingDir.resolve("node_modules").resolve(".bin"),
                 ) {
                     when (NodeJsRegistry.platform) {
