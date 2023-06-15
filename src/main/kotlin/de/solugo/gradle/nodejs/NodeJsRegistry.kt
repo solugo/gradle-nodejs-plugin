@@ -32,7 +32,7 @@ object NodeJsRegistry {
     fun resolve(
         version: String,
         cacheFolder: File,
-        onInstall: ((version: String, folder : File) -> Unit)? = null,
+        onInstall: ((version: String, folder: File) -> Unit)? = null,
     ) = instances.computeIfAbsent(Key(version = version)) {
         val installFolder = cacheFolder.resolve("v$version")
 
@@ -76,10 +76,10 @@ object NodeJsRegistry {
                     }
 
                     if (entry is TarArchiveEntry) {
-                        "${entry.mode}".first().digitToInt().also { value ->
-                            destination.setExecutable((value and 1) == 1)
-                            destination.setWritable((value and 2) == 2)
-                            destination.setReadable((value and 4) == 4)
+                        entry.mode.toString().toCharArray().map(Char::digitToInt).also { parts ->
+                            destination.setExecutable(entry.mode and "111".toInt(radix = 8) != 0)
+                            destination.setWritable(entry.mode and "222".toInt(radix = 8) != 0)
+                            destination.setReadable(entry.mode and "444".toInt(radix = 8) != 0)
                         }
                     }
                 }
