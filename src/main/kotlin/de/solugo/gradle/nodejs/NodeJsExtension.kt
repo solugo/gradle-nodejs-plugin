@@ -59,6 +59,12 @@ class NodeJsExtension(private val project: Project) {
         }
     }
 
+    fun execNode(vararg args: String) {
+        execNode {
+            commandLine(args)
+        }
+    }
+
     fun execNode(action: NodeJsExecSpec.() -> Unit) {
         exec {
             action()
@@ -69,6 +75,12 @@ class NodeJsExtension(private val project: Project) {
         }
     }
 
+    fun execNpm(vararg args: String) {
+        execNpm {
+            commandLine(args)
+        }
+    }
+
     fun execNpm(action: NodeJsExecSpec.() -> Unit) {
         exec {
             action()
@@ -76,6 +88,12 @@ class NodeJsExtension(private val project: Project) {
                 add(resolveBinary("npm"))
                 addAll(commandLine)
             }
+        }
+    }
+
+    fun execNpx(vararg args: String) {
+        execNpx {
+            commandLine(args)
         }
     }
 
