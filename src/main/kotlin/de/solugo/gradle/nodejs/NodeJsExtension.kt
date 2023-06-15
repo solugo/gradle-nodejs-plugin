@@ -34,7 +34,7 @@ class NodeJsExtension(private val project: Project) {
                     instance.modulesFolder.resolve(".bin"),
                     workingDir.resolve("node_modules").resolve(".bin"),
                 ) {
-                    it.isFile && when (NodeJsRegistry.platform) {
+                    when (NodeJsRegistry.platform) {
                         NodeJsRegistry.Platform.WINDOWS -> it.name == "$name.cmd" || it.name == "$name.exe"
                         else -> it.name == "$name.sh" || it.name == name
                     }
