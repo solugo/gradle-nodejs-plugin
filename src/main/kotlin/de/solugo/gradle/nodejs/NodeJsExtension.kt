@@ -29,19 +29,19 @@ class NodeJsExtension(private val project: Project) {
             spec.workingDir = rootPath.get()
             action(object : NodeJsExecSpec, ExecSpec by spec {
                 override fun resolveBinary(name: String) = resolve(
-                    "binary $name",
+                    "binary '$name'",
                     instance.binFolder,
                     instance.modulesFolder.resolve(".bin"),
                     workingDir.resolve("node_modules").resolve(".bin"),
                 ) {
                     it.isFile && when (NodeJsRegistry.platform) {
                         NodeJsRegistry.Platform.WINDOWS -> it.name == "$name.cmd" || it.name == "$name.exe"
-                        else -> it.name == name
+                        else -> it.name == "$name.sh" || it.name == name
                     }
                 }
 
                 override fun resolveScript(name: String) = resolve(
-                    "script $name",
+                    "script '$name'",
                     workingDir,
                     workingDir.resolve("node_modules"),
                     project.projectDir,
@@ -55,7 +55,7 @@ class NodeJsExtension(private val project: Project) {
                     predicate: (File) -> Boolean,
                 ) = folders.firstNotNullOfOrNull {
                     it.listFiles()?.firstOrNull(predicate)?.absolutePath
-                } ?: error("Could not resolve $target in $folders")
+                } ?: error("Could not resolve $target in ${folders.joinToString(prefix = "[", postfix = "]")}")
             })
         }
     }
