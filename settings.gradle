@@ -1,2 +1,0 @@
-rootProject.name = 'gradle-nodejs-plugin'
-enableFeaturePreview('STABLE_PUBLISHING')
