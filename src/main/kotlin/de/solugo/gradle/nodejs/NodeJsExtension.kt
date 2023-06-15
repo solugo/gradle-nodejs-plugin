@@ -54,7 +54,7 @@ class NodeJsExtension(private val project: Project) {
                     vararg folders: File,
                     predicate: (File) -> Boolean,
                 ) = folders.firstNotNullOfOrNull {
-                    it.listFiles()?.firstOrNull(predicate)?.absolutePath
+                    it.listFiles()?.firstOrNull(predicate)?.takeIf { it.exists() }?.absolutePath
                 } ?: error("Could not resolve $target in ${folders.joinToString(prefix = "[", postfix = "]")}")
             })
         }
