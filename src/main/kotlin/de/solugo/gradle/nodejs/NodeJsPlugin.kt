@@ -6,7 +6,8 @@ import org.gradle.api.Project
 class NodeJsPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         val extension = NodeJsExtension(project)
-        project.extensions.add("nodejs", NodeJsExtension(project))
+
+        project.extensions.add("nodejs", extension)
 
         project.tasks.addRule("Pattern: npm<Task>: Runs npm task") { name ->
             if (project.tasks.findByPath(name) == null && name.startsWith("npm")) {

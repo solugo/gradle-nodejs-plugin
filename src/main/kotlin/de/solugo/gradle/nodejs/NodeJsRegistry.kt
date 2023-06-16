@@ -92,7 +92,6 @@ object NodeJsRegistry {
             version = version,
             modulesFolder = modulesFolder,
             installFolder = installFolder,
-            binFolder = installFolder.resolve("bin").takeIf { it.exists() } ?: installFolder,
         )
     }
 
@@ -116,6 +115,6 @@ object NodeJsRegistry {
         val version: String,
         val modulesFolder: File,
         val installFolder: File,
-        val binFolder: File,
+        val binFolder: File = installFolder.resolve("bin").takeIf { it.exists() } ?: installFolder,
     )
 }
