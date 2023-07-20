@@ -38,6 +38,7 @@ class NodeJsExtension(private val project: Project) {
 
     fun exec(action: NodeJsExecSpec.() -> Unit) {
         project.exec { spec ->
+            spec.prependPath(instance.binFolder.absolutePath)
             spec.workingDir = rootPath.get()
             action(object : NodeJsExecSpec, ExecSpec by spec {
                 override fun resolveBinary(name: String) = resolve(
@@ -148,5 +149,15 @@ class NodeJsExtension(private val project: Project) {
         fun resolveScript(name: String): String
     }
 
+    private fun ExecSpec.prependPath(vararg paths: String) {
+        val key = environment.keys.firstOrNull { it.equals("path", ignoreCase = true) } ?: "PATH"
+        val old = environment[key]?.toString()?.split(File.pathSeparator) ?: emptyList()
+        val new = buildList {
+            addAll(paths)
+            addAll(old)
+        }
+
+        environment[key] = new.joinToString(File.pathSeparator)
+    }
 
 }
